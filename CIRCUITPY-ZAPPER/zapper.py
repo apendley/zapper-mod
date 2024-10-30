@@ -45,7 +45,7 @@ class Zapper:
                             samples_signed=True)
 
         self._audio.play(self._mixer)
-        self._mixer.voice[0].level = 1.0
+        self._mixer.voice[0].level = 0.5
 
         # Set up neopixel and fancy led
         self._pixel = neopixel.NeoPixel(board.EXTERNAL_NEOPIXELS, 1, brightness=1.0, auto_write=True, pixel_order="RGB")
