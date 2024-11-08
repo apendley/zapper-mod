@@ -51,6 +51,13 @@ class Zapper:
         self._pixel = neopixel.NeoPixel(board.EXTERNAL_NEOPIXELS, 1, brightness=1.0, auto_write=True, pixel_order="RGB")
         self._fancy = adafruit_fancyled.adafruit_fancyled
 
+        # set up poweron sfx
+        self._power_on_wave_files = self._create_sound_list("sounds/power_on")
+
+        # set up fire sfx
+        self._fire_wave_files = self._create_sound_list("sounds/fire")
+        self._last_fire_sfx = None
+
         # Set up state machine
         self._states = [
             StatePowerOn(self),
@@ -129,24 +136,28 @@ class Zapper:
         # Return the duration
         return duration
 
+    # Play a random fire sfx, making sure not to play the same one twice in a row
+    def play_fire_sfx(self):
+        sound_list_count = len(self._fire_wave_files)
+        sfx_index = random.randrange(0, sound_list_count)
+
+        # Don't play the same sound twice in a row
+        while sfx_index == self._last_fire_sfx:
+            sfx_index = random.randrange(0, sound_list_count)
+        
+        self._last_fire_sfx = sfx_index
+        return self.play_sound(self._fire_wave_files[sfx_index])
+
+    # Play a random power on sfx
+    def play_power_on_sfx(self):
+        sound_list_count = len(self._power_on_wave_files)
+        sfx_index = random.randrange(0, sound_list_count)
+        return self.play_sound(self._power_on_wave_files[sfx_index])
+        
     # Returns a list of .wav files from the specified directory
-    def create_sound_list(self, directory):
+    def _create_sound_list(self, directory):
         return [
             directory + "/" + file
             for file in os.listdir(directory)
             if (file.endswith(".wav") and not file.startswith("._"))
         ]
-
-    # Play a random sound from a list of wav files.
-    # If last_sound_index is provided, that sound will not be played twice in a row.
-    # Returns a tuple: (played_sfx_index, duration_in_ms)
-    def play_random_sound(self, sound_list, last_sound_index=None):
-        sound_list_count = len(sound_list)
-        sfx_index = random.randrange(0, sound_list_count)
-
-        # Don't play the same sound twice in a row
-        while sfx_index == last_sound_index:
-            sfx_index = random.randrange(0, sound_list_count)
-        
-        duration = self.play_sound(sound_list[sfx_index])
-        return (sfx_index, duration)

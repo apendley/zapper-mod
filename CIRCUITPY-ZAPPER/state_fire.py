@@ -3,15 +3,9 @@ import random
 from state import State
 
 class StateFire(State):
-    def __init__(self, zapper):
-        State.__init__(self, zapper)
-        self._wave_files = self.zapper.create_sound_list("sounds/fire")
-        self._last_sfx = None
-
     def enter(self):
-        (self._last_sfx, self._muzzle_flash_duration) = self.zapper.play_random_sound(self._wave_files, self._last_sfx)
+        self._muzzle_flash_duration = self.zapper.play_fire_sfx()
         self._ticks = self._muzzle_flash_duration
-
         self._hue = random.random()
         self.zapper.set_muzzle_hsv(self._hue, 1.0, 1.0)
 

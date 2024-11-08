@@ -6,12 +6,10 @@ class StatePowerOn(State):
 
     def __init__(self, zapper):
         State.__init__(self, zapper)
-        self._wave_files = self.zapper.create_sound_list("sounds/power_on")
         self._hue = 0
 
     def enter(self):
-        (_, self._power_on_duration) = self.zapper.play_random_sound(self._wave_files)
-
+        self._power_on_duration = self.zapper.play_power_on_sfx()
         self._ticks = 0
         self._color_change_time = 0
         self._change_color()
